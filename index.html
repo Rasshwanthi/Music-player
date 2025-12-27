@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lover Music Player</title>
+
+<style>
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.player {
+    width: 340px;
+    border-radius: 25px;
+    padding: 20px;
+    color: #111;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.cover {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Favorite icon */
+.favorite {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    font-size: 26px;
+    cursor: pointer;
+    color: #aaa;
+    user-select: none;
+}
+
+.favorite.active {
+    color: #ff2d55;
+}
+
+.song-info h3 {
+    margin: 10px 0 3px;
+}
+
+.song-info p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #ffc0cb;
+    border-radius: 10px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: #ff69b4;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+}
+
+.btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255,182,193,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.play {
+    width: 60px;
+    height: 60px;
+    background: #ff69b4;
+    color: white;
+    font-size: 22px;
+}
+
+.track {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    background: rgba(255,182,193,0.3);
+}
+
+.track.active {
+    background: #ff69b4;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="player">
+
+    <div class="cover">
+        <img id="cover" src="https://upload.wikimedia.org/wikipedia/en/c/cd/Taylor_Swift_-_Lover.png">
+        <span class="favorite" id="fav" onclick="toggleFav()">♡</span>
+    </div>
+
+    <div class="song-info">
+        <h3 id="title">Lover</h3>
+        <p id="artist">Taylor Swift</p>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="controls">
+        <div class="btn" onclick="rewind()">⏮</div>
+        <div class="btn play" id="playBtn" onclick="togglePlay()">▶</div>
+        <div class="btn" onclick="nextSong()">⏭</div>
+    </div>
+
+    <div class="playlist">
+        <div class="track active" onclick="selectSong(0)">Lover</div>
+        <div class="track" onclick="selectSong(1)">Love Story</div>
+        <div class="track" onclick="selectSong(2)">You Belong With Me</div>
+    </div>
+
+</div>
+
+<script>
+const songs = [
+  {
+    title: "Lover",
+    artist: "Taylor Swift",
+    img: "https://upload.wikimedia.org/wikipedia/en/c/cd/Taylor_Swift_-_Lover.png"
+  },
+  {
+    title: "Love Story",
+    artist: "Taylor Swift",
+    img: "https://variety.com/wp-content/uploads/2021/02/image0-e1613049788513.jpeg?w=1000&h=592&crop=1"
+  },
+  {
+    title: "You Belong With Me",
+    artist: "Taylor Swift",
+    img: "https://i1.sndcdn.com/artworks-000037677726-azr5wx-t1080x1080.jpg"
+  }
+];
+
+let current = 0;
+let playing = false;
+let progress = 0;
+let timer;
+
+function togglePlay() {
+    const btn = document.getElementById("playBtn");
+
+    if (!playing) {
+        playing = true;
+        btn.textContent = "⏸";
+        timer = setInterval(() => {
+            progress++;
+            document.getElementById("progress").style.width = progress + "%";
+            if (progress >= 100) togglePlay();
+        }, 300);
+    } else {
+        playing = false;
+        btn.textContent = "▶";
+        clearInterval(timer);
+    }
+}
+
+function rewind() {
+    progress = 0;
+    document.getElementById("progress").style.width = "0%";
+}
+
+function nextSong() {
+    current = (current + 1) % songs.length;
+    loadSong();
+}
+
+function selectSong(index) {
+    current = index;
+    loadSong();
+}
+
+function loadSong() {
+    document.getElementById("title").textContent = songs[current].title;
+    document.getElementById("artist").textContent = songs[current].artist;
+    document.getElementById("cover").src = songs[current].img;
+
+    document.querySelectorAll(".track").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".track")[current].classList.add("active");
+
+    rewind();
+}
+
+function toggleFav() {
+    const fav = document.getElementById("fav");
+    fav.classList.toggle("active");
+    fav.textContent = fav.classList.contains("active") ? "♥" : "♡";
+}
+</script>
+
+</body>
+</html>
